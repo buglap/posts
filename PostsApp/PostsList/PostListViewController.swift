@@ -45,10 +45,13 @@ class PostListViewController: UIViewController {
             DispatchQueue.main.async {
                 guard let self = self else { return }
                 if !self.postListViewModel.posts.isEmpty {
+                    self.dismiss(animated: false)
                     self.stackView.removeAllSubviews()
                     self.postListViewModel.posts.forEach { post in
                         self.stackView.addArrangedSubview(self.getPostCellView(post: post))
                     }
+                } else {
+                    self.setUpLoader()
                 }
             }
         }).sink { _ in }
@@ -61,6 +64,16 @@ class PostListViewController: UIViewController {
         NSLayoutConstraint.activate([
             deleteAllNoFavoritesButton.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor)
         ])
+    }
+    
+    func setUpLoader() {
+        let alert = UIAlertController(title: nil, message: "Please wait...", preferredStyle: .alert)
+        let loadingIndicator = UIActivityIndicatorView(frame: CGRect(x: 10, y: 5, width: 50, height: 50))
+        loadingIndicator.hidesWhenStopped = true
+        loadingIndicator.style = UIActivityIndicatorView.Style.large
+        loadingIndicator.startAnimating();
+        alert.view.addSubview(loadingIndicator)
+        present(alert, animated: true, completion: nil)
     }
     
     @objc func deleteAllNoFavoriteButtonTapped(_ sender: UIButton?) {
